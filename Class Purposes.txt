@@ -1,0 +1,11 @@
+﻿Jaguar.Program
+	Main class of the emulator. Starts the server and begins distrubuting work among other classes.
+
+Jaguar.Networking.GreetServer
+	Class for handling new user connections.
+
+Jaguar.IO.CoreFunctions
+	Static class for holding important core methods used by the entire application.
+
+Jaguar.Client.Guest
+	Class for handling new guest login/registration and welcome packets.
