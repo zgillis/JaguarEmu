@@ -54,7 +54,7 @@ namespace Jaguar.Database
         {
             MySqlCommand createCommand = new MySqlCommand();
             createCommand.Connection = Program.database.connection;
-            createCommand.CommandText = "INSERT INTO Users VALUES(0, @username, @password, @birthdate, @consolemission, @mission, @credits, @email, @figure, 1, @gender)";
+            createCommand.CommandText = "INSERT INTO Users VALUES(0, @username, @password, @birthdate, @consolemission, @mission, @credits, @email, @figure, 1, @gender, 31, @creation)";
             createCommand.Parameters.AddWithValue("@username", rd[0]);
             createCommand.Parameters.AddWithValue("@password", rd[3]);
             createCommand.Parameters.AddWithValue("@birthdate", rd[4]);
@@ -64,6 +64,10 @@ namespace Jaguar.Database
             createCommand.Parameters.AddWithValue("@email", rd[5]);
             createCommand.Parameters.AddWithValue("@figure", rd[1]);
             createCommand.Parameters.AddWithValue("@gender", rd[6]);
+            DateTime now = DateTime.Now;
+            string dateTime = string.Format("{0}-{1}-{2} {3}:{4}", now.Day.ToString("00"),
+                   now.Month.ToString("00"), now.Year.ToString("0000"), now.Hour.ToString("00"), now.Minute.ToString("00"));
+            createCommand.Parameters.AddWithValue("@creation", dateTime);
             try
             {
                 createCommand.ExecuteNonQuery();
@@ -214,6 +218,75 @@ namespace Jaguar.Database
             }
             dr.Close();
             return fig;
+        }
+
+        public static string GetUserCreationDate(int id)
+        {
+            MySqlCommand figGetter = new MySqlCommand("SELECT creation FROM Users WHERE ID = @id", Program.database.connection);
+            figGetter.Parameters.AddWithValue("@id", id);
+            MySqlDataReader dr = figGetter.ExecuteReader();
+            string fig = "";
+            if (dr.Read())
+            {
+                fig = dr.GetString(0);
+            }
+            dr.Close();
+            return fig;
+        }
+
+        public static int GetUserHCDays(int id)
+        {
+            MySqlCommand idGetter = new MySqlCommand("SELECT hcdays FROM Users WHERE id = @id", Program.database.connection);
+            idGetter.Parameters.AddWithValue("@id", id);
+            MySqlDataReader dr = idGetter.ExecuteReader();
+            int hcdays = 0;
+            if (dr.Read())
+            {
+                hcdays = dr.GetInt32(0);
+            }
+            dr.Close();
+            return hcdays;
+        }
+
+        public static int[] GetUserHCSplit(int id)
+        {
+            int hcdays = GetUserHCDays(id);
+            int months = hcdays / 31;
+            int days = hcdays % 31;
+            int[] credentials = { days, 0, months };
+            return credentials;
+        }
+
+        public static void UpdateConsoleMission(int id, string motto)
+        {
+            MySqlCommand missChange = new MySqlCommand("UPDATE Users SET consolemission = @conmis WHERE ID = @id", Program.database.connection);
+            missChange.Parameters.AddWithValue("@conmis", motto);
+            missChange.Parameters.AddWithValue("@id", id);
+            missChange.ExecuteNonQuery();
+        }
+
+        public static void UpdateMission(int id, string motto)
+        {
+            MySqlCommand missChange = new MySqlCommand("UPDATE Users SET mission = @mis WHERE ID = @id", Program.database.connection);
+            missChange.Parameters.AddWithValue("@mis", motto);
+            missChange.Parameters.AddWithValue("@id", id);
+            missChange.ExecuteNonQuery();
+        }
+
+        public static void UpdateGender(int id, string gender)
+        {
+            MySqlCommand missChange = new MySqlCommand("UPDATE Users SET gender = @gender WHERE ID = @id", Program.database.connection);
+            missChange.Parameters.AddWithValue("@gender", gender);
+            missChange.Parameters.AddWithValue("@id", id);
+            missChange.ExecuteNonQuery();
+        }
+
+        public static void UpdateFigure(int id, string figure)
+        {
+            MySqlCommand missChange = new MySqlCommand("UPDATE Users SET figure = @figure WHERE ID = @id", Program.database.connection);
+            missChange.Parameters.AddWithValue("@figure", figure);
+            missChange.Parameters.AddWithValue("@id", id);
+            missChange.ExecuteNonQuery();
         }
     }
 }

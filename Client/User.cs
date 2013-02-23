@@ -28,7 +28,7 @@ namespace Jaguar.Client
             string packet = Encoding.UTF8.GetString(buffer);
             int packetLen = CoreFunctions.Base64Decode(packet.Substring(1, 2));
             string data = packet.Substring(3, packetLen);
-            write("REC: " + data + '\n');
+            write("RX: " + data + '\n');
             string header = data.Substring(0, 2);
             string pdata = data.Substring(2);
             int hid = CoreFunctions.Base64Decode(header);
@@ -128,8 +128,11 @@ namespace Jaguar.Client
 
         void send(string s)
         {
-            if(CoreFunctions.IsConnected(socket))
+            if (CoreFunctions.IsConnected(socket))
+            {
                 socket.Send(Encoding.ASCII.GetBytes(s));
+                write("TX: " + s + '\n');
+            }
         }
 
         void write(string s, bool error = false, bool fatal = false)
